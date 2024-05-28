@@ -1,34 +1,33 @@
 ### INPUT
-datadir = /mnt1/yinxiaoting/Dataset/EventNeRF/data/real
-scene = sewing
-expname = real_sewing #real_sewing_ldist1e-4_cycled_o0375
-basedir = /mnt1/yinxiaoting/PythonProject/EventNeRF/logs
+# datadir = <absolute-path-to-code>/data/nerf
+# datadir = /mnt1/yinxiaoting/Dataset/EventNeRF/data/nerf
+datadir = /mnt/i/Event3DGS_collect_data/data
+scene = 0423_car
+expname = ours_car_WinSize10_EvThr0.2
+# basedir = /mnt1/yinxiaoting/PythonProject/EventNeRF/logs
+basedir = /mnt/e/PythonProject/EventNeRF/logs
 config = None
 ckpt_path = None
 no_reload = False
 testskip = 1
 trainskip = 1
-winsize = 100
+winsize = 10
 
 is_colored = True
-event_threshold = 0.1
-polarity_offset = -0.375
+event_threshold = 0.2
  
-seed_offset = 1
-is_cycled=True
+seed_offset = 0
 
 ### TRAINING
-N_iters = 5000001
+N_iters = 500001
+# N_iters = 5000001
 N_rand = 1024
 lrate = 0.0005
 lrate_decay_factor = 0.1
-lrate_decay_steps = 50000000
+# lrate_decay_steps = 50000000
+lrate_decay_steps = 500000
 
-neg_ratio = 0.05
-
-crop_r = 0.25
-crop_y_min = -0.35
-crop_y_max = 0.15
+neg_ratio = 0.1
 
 ### CASCADE
 cascade_level = 2
@@ -52,6 +51,7 @@ activation = tanh
 garf_sigma = 0.1
 
 with_bg = False
+tonemap_eps = 0.1
 use_ldist_reg = True
 ldist_reg = 0.0001
 

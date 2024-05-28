@@ -1,8 +1,8 @@
 ### INPUT
-datadir = <absolute-path-to-code>/data/real
+datadir = /mnt1/yinxiaoting/Dataset/EventNeRF/data/real
 scene = legocube
-expname = real_legocube_ldist1e-4_cycled_seed2_o0404
-basedir = <absolute-path-to-code>/logs
+expname = real_legocube #real_legocube_ldist1e-4_cycled_seed2_o0404
+basedir = /mnt1/yinxiaoting/PythonProject/EventNeRF/logs
 config = None
 ckpt_path = None
 no_reload = False

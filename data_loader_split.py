@@ -47,7 +47,7 @@ def load_event_data_split(basedir, scene, split, camera_mgr, skip=1, max_winsize
     cam_cnt = len(pose_files)
 
     # event file
-    event_file = find_files('{}/events'.format(split_dir), exts=['*.npz'])
+    event_file = find_files('{}/events'.format(split_dir), exts=['*.npz', '*.npy'])
     print(event_file)
     assert(len(event_file) == 1)
     event_file = event_file[0]
@@ -76,6 +76,7 @@ def load_event_data_split(basedir, scene, split, camera_mgr, skip=1, max_winsize
         curr_file = img_files[i]
         if not camera_mgr.contains(curr_file):
             pose = parse_txt(pose_files[i], (4,4))
+            pose = np.linalg.inv(pose)              # 用colmap标定的外参转成EventNeRF要求的
             camera_mgr.add_camera(curr_file, pose)
 
 
@@ -84,6 +85,11 @@ def load_event_data_split(basedir, scene, split, camera_mgr, skip=1, max_winsize
     # 1 for the initial event batch spoiling everything
     # max_winsize more for previous pose not getting into this trap too
     start_range = 0 if cycle else 1+max_winsize
+
+    whole_time = ts[-1] - ts[0]
+    # whole_time = (144000 / 30000) * 1e6             # 绕一圈的时间（旋转台全圈步数除以每秒步数）
+    interval = whole_time / (cam_cnt - 1)  # 两个视角间用的时间，认为运动是是均匀的
+
     for i in range(start_range, cam_cnt):
         try:
             intrinsics = parse_txt(intrinsics_files[i], (5,4))
@@ -97,31 +103,38 @@ def load_event_data_split(basedir, scene, split, camera_mgr, skip=1, max_winsize
         else:
             winsize = max_winsize
 
+        end_time = ts[0] + i * interval
+        start_time = ts[0] + (i - winsize) * interval
+        if start_time < ts[0]:
+            start_time = ts[0]
 
-        # what is -1 for? for i=last frame covering all events
-        start_time = (i-winsize)/(cam_cnt-1)
-        if start_time < 0:
-            start_time += 1
-        end_time = (i)/(cam_cnt-1)
+        end = np.searchsorted(ts, end_time)
+        start = np.searchsorted(ts, start_time)
 
-        end = np.searchsorted(ts, end_time*ts.max())
-
-        if win_constant_count != 0:
-            # TODO: there could be a bug with windows in the start, e.g., end-win_constant_count<0
-            #       please, check if the windows are correctly composed in that case
-            start_time = ts[end-win_constant_count]/ts.max()
-
-            if win_constant_count > end:
-                start_time = start_time - 1
-
-            winsize = int(i-start_time*(cam_cnt-1))
-            assert(winsize>0)
-            start_time = (i-winsize)/(cam_cnt-1)
-
-            if start_time < 0:
-                start_time += 1
-
-        start = np.searchsorted(ts, start_time*ts.max())
+        # # what is -1 for? for i=last frame covering all events
+        # start_time = (i-winsize)/(cam_cnt-1)
+        # if start_time < 0:
+        #     start_time += 1
+        # end_time = (i)/(cam_cnt-1)
+        #
+        # end = np.searchsorted(ts, end_time*ts.max())
+        #
+        # if win_constant_count != 0:
+        #     # TODO: there could be a bug with windows in the start, e.g., end-win_constant_count<0
+        #     #       please, check if the windows are correctly composed in that case
+        #     start_time = ts[end-win_constant_count]/ts.max()
+        #
+        #     if win_constant_count > end:
+        #         start_time = start_time - 1
+        #
+        #     winsize = int(i-start_time*(cam_cnt-1))
+        #     assert(winsize>0)
+        #     start_time = (i-winsize)/(cam_cnt-1)
+        #
+        #     if start_time < 0:
+        #         start_time += 1
+        #
+        # start = np.searchsorted(ts, start_time*ts.max())
 
         if start <= end:
             # normal case: take the interval between
@@ -134,7 +147,7 @@ def load_event_data_split(basedir, scene, split, camera_mgr, skip=1, max_winsize
                       np.concatenate((ps[start:], ps[:end])),
                      )
 
-        H, W = 260, 346
+        H, W = 720, 1280             # H, W = 260, 346
 
         prev_file = img_files[(i-winsize+len(img_files))%len(img_files)]
         curr_file = img_files[i]

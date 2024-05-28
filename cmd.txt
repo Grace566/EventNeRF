@@ -1,0 +1,282 @@
+# train
+ddp_train_nerf.py
+# debug
+形参
+--config configs/nerf/lego.txt
+环境变量
+CUDA_VISIBLE_DEVICES=0
+# run
+conda activate eventnerf
+cd /mnt1/yinxiaoting/PythonProject/EventNeRF/
+CUDA_VISIBLE_DEVICES=0 python ddp_train_nerf.py --config configs/nerf/chair.txt
+
+# 用于定量指标评估的图像生成
+python ddp_test_nerf.py --config configs/nerf/mic.txt --render_split train --testskip 10
+# 定量指标评估
+conda activate eventnerf
+cd /mnt1/yinxiaoting/PythonProject/EventNeRF/metric
+1.自动 (文件夹目录没有改)
+cd comp
+./compute.sh
+./compute_ngp.sh
+./compute_deblur.sh
+2. 手动
+python ./main.py /mnt1/yinxiaoting/Dataset/EventNeRF/comp_data/mic/event /mnt1/yinxiaoting/Dataset/EventNeRF/comp_data/mic/gt
+./compssim.py /mnt1/yinxiaoting/Dataset/EventNeRF/comp_data/mic/event_corr /mnt1/yinxiaoting/Dataset/EventNeRF/comp_data/mic/gt
+./complpips.py /mnt1/yinxiaoting/Dataset/EventNeRF/comp_data/mic/event_corr /mnt1/yinxiaoting/Dataset/EventNeRF/comp_data/mic/gt
+# test
+ddp_train_nerf.py
+# debug
+形参
+--config configs/nerf/chair.txt --render_split train --testskip 10
+环境变量
+CUDA_VISIBLE_DEVICES=0
+########################################################  实验  ########################################################
+
+# WSL
+wsl  (cmd中启动wsl)
+cd /mnt/e/PythonProject/EventNeRF
+conda activate eventnerf
+python ddp_train_nerf.py --config configs/nerf/chair.txt
+tensorboard --logdir=/mnt/e/PythonProject/EventNeRF/logs/ --port=2345
+
+python ddp_train_nerf.py --config configs/ours/car.txt
+
+# nerf_chair tensorboard
+tensorboard --logdir=/mnt1/yinxiaoting/PythonProject/EventNeRF/logs/nerf_chair/ --port=2345 --bind_all
+
+# nerf_chair
+CUDA_VISIBLE_DEVICES=0 python ddp_train_nerf.py --config configs/nerf/chair.txt
+CUDA_VISIBLE_DEVICES=0 python ddp_test_nerf.py --config configs/nerf/chair.txt
+
+# nerf_chair mesh
+conda activate eventnerf
+cd /mnt1/yinxiaoting/PythonProject/EventNeRF/
+CUDA_VISIBLE_DEVICES=0 python ddp_mesh_nerf.py --config configs/nerf/chair.txt
+scp -P 304 yinxiaoting@10.12.11.28:/mnt1/yinxiaoting/PythonProject/EventNeRF/logs/nerf_chair/allres.npy I:/Dataset/EventNeRF/data/nerf/chair/EventNeRF
+scp -P 304 yinxiaoting@10.12.11.28:/mnt1/yinxiaoting/PythonProject/EventNeRF/logs/nerf_chair/allcolor.npy I:/Dataset/EventNeRF/data/nerf/chair/EventNeRF
+scp -P 304 yinxiaoting@10.12.11.28:/mnt1/yinxiaoting/PythonProject/EventNeRF/logs/nerf_chair/output.ply I:/Dataset/EventNeRF/data/nerf/chair/EventNeRF
+scp -P 304 yinxiaoting@10.12.11.28:/mnt1/yinxiaoting/PythonProject/EventNeRF/logs/nerf_chair/points3D.ply I:/Dataset/EventNeRF/data/nerf/chair/EventNeRF
+
+# nerf_drums tensorboard
+tensorboard --logdir=/mnt1/yinxiaoting/PythonProject/EventNeRF/logs/nerf_drums_seed2/ --port=2345 --bind_all
+
+# nerf_drums
+CUDA_VISIBLE_DEVICES=2 python ddp_train_nerf.py --config configs/nerf/drums.txt
+
+# nerf
+CUDA_VISIBLE_DEVICES=2 python ddp_train_nerf.py --config configs/nerf/ficus.txt
+CUDA_VISIBLE_DEVICES=2 python ddp_train_nerf.py --config configs/nerf/hotdog.txt
+CUDA_VISIBLE_DEVICES=2 python ddp_train_nerf.py --config configs/nerf/lego.txt
+CUDA_VISIBLE_DEVICES=2 python ddp_train_nerf.py --config configs/nerf/materials.txt
+CUDA_VISIBLE_DEVICES=2 python ddp_train_nerf.py --config configs/nerf/mic.txt
+echo finish
+
+# real_sewing tensorboard
+tensorboard --logdir=/mnt1/yinxiaoting/PythonProject/EventNeRF/logs/real_sewing_ldist1e-4_cycled_o0375/ --port=2345 --bind_all
+
+#real_sewing
+CUDA_VISIBLE_DEVICES=1 python ddp_train_nerf.py --config configs/real/sewing.txt
+
+#【tmux 0】 real_sewing train
+CUDA_VISIBLE_DEVICES=0 python ddp_train_nerf.py --config configs/real/sewing.txt
+CUDA_VISIBLE_DEVICES=0 python ddp_train_nerf.py --config configs/real/legocube.txt
+echo finish
+
+#  real_sewing test
+CUDA_VISIBLE_DEVICES=1 python ddp_test_nerf.py --config configs/real/sewing.txt
+CUDA_VISIBLE_DEVICES=1 python ddp_test_nerf.py --config configs/real/legocube.txt
+
+# 压缩文件夹传回本地
+cd /mnt1/yinxiaoting/PythonProject/EventNeRF/logs/real_sewing/
+tar -czvf render_test_500000.tar.gz render_test_500000
+scp -P 304 yinxiaoting@10.12.11.28:/mnt1/yinxiaoting/PythonProject/EventNeRF/logs/real_sewing/render_test_500000.tar.gz E:/PythonProject/E2F-GS/Results/EventNeRF_real
+
+
+#【tmux 1】 real_sewing
+tensorboard --logdir=/mnt1/yinxiaoting/PythonProject/EventNeRF/logs/ --port=2345 --bind_all
+本地
+http://10.12.11.28:2345/
+
+########################################################  常用指令  #####################################################
+# 查看已有的tmux窗口
+tmux list-windows
+# 要连接到编号为0的tmux会话
+tmux attach-session -t 0
+# 切换到特定的窗口
+tmux select-window -t 1
+
+# 查看loss
+服务器上指令
+conda activate eventnerf
+tensorboard --logdir=/mnt1/yinxiaoting/PythonProject/EventNeRF/logs/nerf_chair/ --port=2345 --bind_all
+本地
+http://10.12.11.28:2345/
+
+# 解压zip文件
+unzip EventNeRF.zip -d /mnt1/yinxiaoting/PythonProject/EventNeRF
+https://github.com/r00tman/EventNeRF/issues/3网站上更新了environments.yml
+
+# 传文件
+scp -P 304 I:/Dataset/GS_TanksTemples/data.tar.gz yinxiaoting@10.12.11.28:/mnt1/yinxiaoting/Dataset/EventNeRF/
+scp -P 304 I:/Dataset/GS_TanksTemples/scenes.zip yinxiaoting@10.12.11.28:/mnt1/yinxiaoting/Dataset/EventNeRF/
+scp -P 304 I:/Dataset/GS_TanksTemples/comp_data.zip yinxiaoting@10.12.11.28:/mnt1/yinxiaoting/Dataset/EventNeRF/
+
+# 解压zip文件
+unzip /mnt1/yinxiaoting/Dataset/EventNeRF/scenes.zip -d /mnt1/yinxiaoting/Dataset/EventNeRF
+unzip /mnt1/yinxiaoting/Dataset/EventNeRF/comp_data.zip -d /mnt1/yinxiaoting/Dataset/EventNeRF/comp_data
+tar -zxvf /mnt1/yinxiaoting/Dataset/EventNeRF/data.tar.gz -C /mnt1/yinxiaoting/Dataset/EventNeRF
+
+########################################################  配环境 ########################################################
+# 添加镜像源（永久）
+nano ~/.condarc
+channels:
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/
+  - defaults
+
+# 添加镜像源在yaml文件中
+conda config --env --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/
+conda config --env --add channels https://mirrors.bfsu.edu.cn/anaconda/pkgs/main/
+conda config --show channels
+
+# conda环境删除所有未使用的缓存文件
+conda clean -a
+
+# 看服务器是否联网
+ping mirrors.zju.edu.cn
+
+# Mamba开源包管理器
+“”“Mamba和Conda的主要区别在于它的速度和性能，Mamba使用C++编写，因此在解析和处理包依赖关系时要比使用Python编写的Conda快得多”“”
+conda install mamba -c conda-forge （base环境或conda环境中）
+mamba env create --file environment.yml
+
+# Linux配环境 （直接用Yaml文件试了不行，需要像下面一样一步一步按命令配环境）
+cd /mnt1/yinxiaoting/PythonProject/EventNeRF
+conda env create --file environment.yml python==3.9.7
+conda activate eventnerf
+# 测试torch是否正确
+import torch
+print(torch.__version__)
+print(torch.cuda.is_available())
+
+## 命令行一步一步配环境
+conda create -n eventnerf python==3.9.7 -y
+conda activate eventnerf
+(# 改镜像源好像没有用，还是从zju镜像网站找
+conda config --env --add channels pytorch
+conda config --env --add channels conda-forge
+conda config --env --add channels defaults
+conda config --env --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/r
+conda config --env --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/msys2
+conda config --env --add channels https://mirrors.bfsu.edu.cn/anaconda/pkgs/main/
+conda config --env --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/
+conda config --env --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/
+# 移除镜像源
+conda config --env --remove channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/
+# 显示当前环境所用的channel
+conda config --env --show channels
+# 更新
+conda update conda
+conda update --all)
+# pytorch_gpu
+conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 cudatoolkit=11.3 -c pytorch -y
+# 测试torch是否正确
+import torch
+print(torch.__version__)
+print(torch.cuda.is_available())
+
+pip install opencv-contrib-python       # python3.9中opencv和pytorch的依赖有冲突，不能用conda
+pip install --default-timeout=100 -U albumentations     # 设置连接超时的时间
+# 确认opencv可用
+import cv2
+print(cv2.__version__)
+
+conda install py-opencv -y      # 不额外装了
+conda install libopencv -y      # 不额外装了
+conda install cudatoolkit-dev -y        # 不额外装了
+
+conda install colorama -y
+conda install conda-package-handling -y
+conda install configargparse -y
+conda install matplotlib -y
+conda install mkl -y                # 已经有了
+conda install numba -y              # 已经有了
+conda install numpy -y              # 已经有了
+conda install pillow -y             # 已经有了
+conda install python-dateutil -y
+conda install python_abi -y -c conda-forge
+conda install pytorch-mutex -y
+conda install pyyaml -y
+conda install readline -y           # 已经有了
+conda install scikit-image -y       # 装opencv时已经有了
+conda install scipy -y              # 装opencv时已经有了
+conda install tensorboard -y
+conda install tensorboard-data-server -y        # 装tensorboard时已经有了
+conda install tensorboard-plugin-wit -y         # 装tensorboard时已经有了
+conda install tensorboardx -y
+conda install termcolor -y
+conda install tqdm -y
+conda install trimesh -y -c conda-forge
+
+# pip
+pip install dv==1.0.10
+pip install ffmpeg-python==0.2.0
+pip install flatbuffers==2.0        # 已经有了，version是23.5.26，就不再装了
+pip install future==0.18.2          # 已经有了，version是0.18.3，就不再装了
+pip install greenlet==1.1.2
+pip install lz4==4.0.0              # 已经有了，version是4.3.3，就不再装了
+pip install msgpack==1.0.3
+pip install orderedattrdict==1.6.0
+pip install panwid==0.3.5
+pip install pyglm==2.5.7
+pip install pymcubes==0.1.2
+pip install pytorch-ranger==0.1.1
+pip install raccoon==3.0.0          # 已经有了，version是3.1.1，就不再装了
+pip install tabulate==0.8.9         # 已经有了，version是0.9.0，就不再装了
+pip install torch-optimizer==0.3.0
+pip install urwid==2.1.2             # 已经有了，version是2.4.1，就不再装了
+pip install urwid-readline==0.13     # 已经有了，version是0.13，就不再装了
+pip install urwid-utils==0.1.3.dev0  # 已经有了，version是0.1.2，就不再装了
+pip install zstd==1.5.2.5            # 已经有了，version是1.5.5.1，就不再装了
+
+
+
+# 运行遇到问题
+conda install pillow=8.4.0 -y
+
+# mesh相关
+conda install -c conda-forge pycollada
+conda install -c conda-forge plyfile
+
+
+# WSL配环境
+cd /mnt/e/PythonProject/EventNeRF
+conda env create --file environment.yml python==3.9.7
+conda activate eventnerf
+# 测试torch是否正确
+import torch
+print(torch.__version__)
+print(torch.cuda.is_available())
+
+conda config --env --add channels pytorch
+conda config --env --add channels conda-forge
+conda config --env --add channels defaults
+conda config --env --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/r
+conda config --env --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/msys2
+conda config --env --add channels https://mirrors.bfsu.edu.cn/anaconda/pkgs/main/
+conda config --env --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/
+# 显示当前环境所用的channel
+conda config --env --show channels
+
+# 确认opencv可用
+import cv2
+print(cv2.__version__)
+
+# pip安装environment.yml删了的
+pip install pycollada==0.7.2
+pip install pynvim==0.4.3
+pip install ranger-fm==1.9.3
+git clone https://github.com/JustusThies/PyMarchingCubes.git
+cd PyMarchingCubes
+git clone https://gitlab.com/libeigen/eigen.git
+python setup.py install

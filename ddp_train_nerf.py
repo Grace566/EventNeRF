@@ -60,9 +60,18 @@ def intersect_sphere(ray_o, ray_d):
     # consider the case where the ray does not intersect the sphere
     ray_d_cos = 1. / torch.norm(ray_d, dim=-1)
     p_norm_sq = torch.sum(p * p, dim=-1)
+    # 输出调试信息
     if (p_norm_sq >= 1.).any():
+        print(f'ray_o: {ray_o}')
+        print(f'ray_d: {ray_d}')
+        print(f'd1: {d1}')
+        print(f'p: {p}')
+        print(f'p_norm_sq: {p_norm_sq}')
         raise Exception(
             f'Not all your cameras are bounded by the unit sphere; please make sure the cameras are normalized properly! e.g. {p_norm_sq.max()}')
+    # if (p_norm_sq >= 1.).any():
+    #     raise Exception(
+    #         f'Not all your cameras are bounded by the unit sphere; please make sure the cameras are normalized properly! e.g. {p_norm_sq.max()}')
     d2 = torch.sqrt(1. - p_norm_sq) * ray_d_cos
 
     return d1 + d2

@@ -66,9 +66,9 @@ def ddp_test_nerf(rank, args):
                     fname = os.path.basename(ray_samplers[idx].rgb_path)
                     # fname = fname+'.png'
 
-            if os.path.isfile(os.path.join(out_dir, fname)):
-                logger.info('Skipping {}'.format(fname))
-                continue
+            # if os.path.isfile(os.path.join(out_dir, fname)):
+            #     logger.info('Skipping {}'.format(fname))
+            #     continue
 
             time0 = time.time()
             ret = render_single_image(rank, args.world_size, models, ray_samplers[idx], args.chunk_size, start)

@@ -11,9 +11,12 @@ import os
 from os import path
 from tqdm import tqdm
 
+# inp_dir = sys.argv[1]  # prediction directory
+# gt_dir = sys.argv[2]  # ground-truth directory
 
-inp_dir = sys.argv[1]  # prediction directory
-gt_dir = sys.argv[2]  # ground-truth directory
+inp_dir = '/mnt1/yinxiaoting/Dataset/EventNeRF/comp_data/mic/event'  # prediction directory
+gt_dir = '/mnt1/yinxiaoting/Dataset/EventNeRF/comp_data/mic/gt'  # ground-truth directory
+
 
 out_dir = inp_dir+'_corr'  # corrected output directory
 os.makedirs(out_dir, exist_ok=True)

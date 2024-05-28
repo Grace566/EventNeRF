@@ -45,7 +45,7 @@ def get_rays_single_image(H, W, intrinsics, c2w):
     :param W: image width
     :param intrinsics: 4 by 4 intrinsic matrix
     :param c2w: 4 by 4 camera to world extrinsic matrix
-    :return:
+    :return: rays_o, rays_d, depth, ray_matrix
     '''
 
     intrinsics = torch.from_numpy(intrinsics).to(c2w.device)
@@ -63,6 +63,7 @@ def get_rays_single_image(H, W, intrinsics, c2w):
     k = [intrinsics[4,0], intrinsics[4,1]]
     # logger.info(f'{f} {c} {k} {u.max()} {v.max()}')
 
+    # 矫正径向畸变
     x = (u-c[0])/f[0]
     y = (v-c[1])/f[1]
     r2 = x**2+y**2
@@ -74,10 +75,9 @@ def get_rays_single_image(H, W, intrinsics, c2w):
     # logger.info(f'{u.min()} {v.min()} {u.max()} {v.max()} {x.min()} {x.max()} {y.min()} {y.max()}')
     # ------------------------------------------
 
-
     pixels = torch.stack((u, v, torch.ones_like(u)), axis=0)  # (3, H*W)
 
-    ray_matrix = torch.matmul(c2w[:3, :3], torch.inverse(intrinsics[:3, :3]))
+    ray_matrix = torch.matmul(c2w[:3, :3], torch.inverse(intrinsics[:3, :3]))       # 将像素坐标转换为世界坐标
     # rays_d = np.dot(np.linalg.inv(intrinsics[:3, :3]), pixels)
     # rays_d = np.dot(c2w[:3, :3], rays_d)  # (3, H*W)
     rays_d = torch.matmul(ray_matrix, pixels)  # (3, H*W)

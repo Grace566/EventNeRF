@@ -1,8 +1,9 @@
 ### INPUT
-datadir = <absolute-path-to-code>/data/nerf
+#datadir = <absolute-path-to-code>/data/nerf
+datadir = /mnt1/yinxiaoting/Dataset/EventNeRF/data/nerf
 scene = lego
 expname = nerf_lego_seed3
-basedir = <absolute-path-to-code>/logs
+basedir = /mnt1/yinxiaoting/PythonProject/EventNeRF/logs
 config = None
 ckpt_path = None
 no_reload = False
@@ -16,7 +17,8 @@ event_threshold = 0.25
 seed_offset = 3
 
 ### TRAINING
-N_iters = 5000001
+#N_iters = 5000001
+N_iters = 500001
 N_rand = 1024
 lrate = 0.0005
 lrate_decay_factor = 0.1

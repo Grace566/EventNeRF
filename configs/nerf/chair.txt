@@ -1,14 +1,17 @@
 ### INPUT
-datadir = <absolute-path-to-code>/data/nerf
+# datadir = <absolute-path-to-code>/data/nerf
+# datadir = /mnt1/yinxiaoting/Dataset/EventNeRF/data/nerf
+datadir = /mnt/i/Dataset/EventNeRF/data/nerf
 scene = chair
-expname = nerf_chair
-basedir = <absolute-path-to-code>/logs
+expname = nerf_chair_test
+# basedir = /mnt1/yinxiaoting/PythonProject/EventNeRF/logs
+basedir = /mnt/e/PythonProject/EventNeRF/logs
 config = None
 ckpt_path = None
 no_reload = False
 testskip = 1
 trainskip = 1
-winsize = 50
+winsize = 20
 
 is_colored = True
 event_threshold = 0.25
@@ -16,6 +19,7 @@ event_threshold = 0.25
 seed_offset = 0
 
 ### TRAINING
+# N_iters = 500001
 N_iters = 5000001
 N_rand = 1024
 lrate = 0.0005
