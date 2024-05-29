@@ -1,11 +1,12 @@
 ### INPUT
 # datadir = <absolute-path-to-code>/data/nerf
 # datadir = /mnt1/yinxiaoting/Dataset/EventNeRF/data/nerf
-datadir = /mnt/i/Event3DGS_collect_data/data
+# datadir = /mnt/i/Event3DGS_collect_data/data
+datadir = /mnt1/yinxiaoting/Dataset/Event3DGS/data/
 scene = 0423_motorcycle
 expname = ours_motorcycle
-# basedir = /mnt1/yinxiaoting/PythonProject/EventNeRF/logs
-basedir = /mnt/e/PythonProject/EventNeRF/logs
+basedir = /mnt1/yinxiaoting/PythonProject/EventNeRF/logs
+# basedir = /mnt/e/PythonProject/EventNeRF/logs
 config = None
 ckpt_path = None
 no_reload = False
